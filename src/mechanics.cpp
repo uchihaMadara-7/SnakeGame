@@ -99,3 +99,7 @@ void Mechanics::update() {
     m_game_win.print(tail.get_row(), tail.get_col(), ' ');
     m_game_win.print(next.get_row(), next.get_col(), next.get_symbol());
 }
+
+void Mechanics::set_direction(Direction direction) {
+    snake.set_direction(direction);
+}

@@ -11,6 +11,7 @@
 /* custom imports */
 #include "include/logger.h"
 #include "include/mechanics.h"
+#include "include/snake.h"
 
 #define LOG_FILE "game.log"
 
@@ -38,8 +39,25 @@ int main() {
     while (!quit) {
         ch = game.read();
         // INFO_TRACE("read game character %d", ch);
-        if (ch == ERR) game.update();
-        else if (ch == 'q') quit = true;
+        switch (ch) {
+            case 'q':
+                quit = true;
+                break;
+            case KEY_DOWN:
+                game.set_direction(DOWN);
+                break;
+            case KEY_UP:
+                game.set_direction(UP);
+                break;
+            case KEY_LEFT:
+                game.set_direction(LEFT);
+                break;
+            case KEY_RIGHT:
+                game.set_direction(RIGHT);
+                break;
+        }
+
+        game.update();
     }
 
     return 0;

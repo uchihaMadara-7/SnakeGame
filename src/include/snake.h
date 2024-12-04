@@ -54,6 +54,7 @@ class Snake {
     /* setters */
     void add_unit(SnakeUnit unit);
     SnakeUnit remove_tail();
+    void set_direction(Direction direction);
 
  private:
     std::queue<SnakeUnit> body;

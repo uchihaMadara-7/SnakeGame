@@ -77,3 +77,7 @@ SnakeUnit Snake::remove_tail() {
     body.pop();
     return tail;
 }
+
+void Snake::set_direction(Direction direction) {
+    this->direction = direction;
+}

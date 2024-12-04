@@ -32,6 +32,7 @@ class Mechanics {
     void render_menu();
     int read() const;
     void update();
+    void set_direction(Direction direction);
 
  private:
     CursesWindow m_game_win;

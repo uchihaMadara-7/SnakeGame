@@ -64,7 +64,7 @@ SnakeUnit Snake::get_next_head() {
             break;
     }
 
-    SnakeUnit next(row, col, 'o');
+    SnakeUnit next(row, col, '#');
     return next;
 }
 

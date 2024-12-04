@@ -29,6 +29,7 @@ class Mechanics {
     void init_screen();
     void init_playarea();
     void init_menu();
+    void init_snake();
     void render_menu();
     int read() const;
     void update();

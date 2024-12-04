@@ -20,9 +20,6 @@ Mechanics::~Mechanics() {}
 
 void Mechanics::init() {
     init_screen();
-    render_menu();
-    SnakeUnit head(m_game_win.get_height()/2, m_game_win.get_width()/2, 'o');
-    snake.add_unit(head);
     m_initialized = true;
 }
 
@@ -33,8 +30,7 @@ bool Mechanics::is_initialized() {
 void Mechanics::init_screen() {
     init_playarea();
     init_menu();
-    /* FIXME: remove this, just for testing */
-    m_game_win.move(1, 1);
+    init_snake();
 }
 
 void Mechanics::init_playarea() {
@@ -58,6 +54,17 @@ void Mechanics::init_menu() {
     /* wait for input for atleast 1 second */
     m_menu_win.set_delay(1000);
     m_menu_win.set_border();
+    render_menu();
+}
+
+void Mechanics::init_snake() {
+    ::wattron(m_game_win.get_window(), A_BOLD | A_STANDOUT);
+    size_t y_pos = m_game_win.get_height()/2;
+    size_t x_pos = m_game_win.get_width()/2-1;
+    SnakeUnit unit(y_pos, x_pos, '#');
+    snake.add_unit(unit);
+    m_game_win.print(y_pos, x_pos, unit.get_symbol());
+    wstandend(m_game_win.get_window());
 }
 
 void Mechanics::render_menu() {
@@ -96,8 +103,10 @@ void Mechanics::update() {
     SnakeUnit next = snake.get_next_head();
     SnakeUnit tail = snake.remove_tail();
     snake.add_unit(next);
-    m_game_win.print(tail.get_row(), tail.get_col(), ' ');
+    ::wattron(m_game_win.get_window(), A_BOLD | A_STANDOUT);
     m_game_win.print(next.get_row(), next.get_col(), next.get_symbol());
+    wstandend(m_game_win.get_window());
+    m_game_win.print(tail.get_row(), tail.get_col(), ' ');
 }
 
 void Mechanics::set_direction(Direction direction) {

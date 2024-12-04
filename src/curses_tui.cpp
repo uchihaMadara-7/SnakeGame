@@ -121,6 +121,7 @@ WINDOW* CursesWindow::get_window() {
 
 void CursesWindow::draw_box() {
     ::box(m_win, ACS_VLINE, ACS_HLINE);
+    refresh();
 }
 
 /* void set_border(char ls = BORDER_LS, char rs = BORDER_RS,

@@ -7,6 +7,7 @@
 
 /* custom imports */
 #include "curses_tui.h"
+#include "snake.h"
 
 class Mechanics {
  public:
@@ -35,5 +36,6 @@ class Mechanics {
  private:
     CursesWindow m_game_win;
     CursesWindow m_menu_win;
+    Snake snake;
     bool m_initialized = false;
 };

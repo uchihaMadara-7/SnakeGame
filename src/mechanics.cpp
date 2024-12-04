@@ -6,11 +6,11 @@
  */
 
 /* standard imports */
-#include <unistd.h>
 
 /* custom imports */
 #include "include/mechanics.h"
 #include "include/curses_tui.h"
+#include "include/snake.h"
 
 Mechanics::Mechanics() {
     init();
@@ -21,6 +21,8 @@ Mechanics::~Mechanics() {}
 void Mechanics::init() {
     init_screen();
     render_menu();
+    SnakeUnit head(m_game_win.get_height()/2, m_game_win.get_width()/2, 'o');
+    snake.add_unit(head);
     m_initialized = true;
 }
 
@@ -91,12 +93,9 @@ int Mechanics::read() const {
 }
 
 void Mechanics::update() {
-    std::string snake = "xxxo";
-    int row = m_game_win.get_cursor_y();
-    int col = m_game_win.get_cursor_x();
-    m_game_win.print(row, col-snake.size(), ' ');
-    m_game_win.move(row, col-snake.size()+1);
-    m_game_win.print(snake);
-    // useconds_t hsec = 1e6/2;
-    // usleep(hsec);
+    SnakeUnit next = snake.get_next_head();
+    SnakeUnit tail = snake.remove_tail();
+    snake.add_unit(next);
+    m_game_win.print(tail.get_row(), tail.get_col(), ' ');
+    m_game_win.print(next.get_row(), next.get_col(), next.get_symbol());
 }

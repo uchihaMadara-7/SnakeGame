@@ -7,6 +7,7 @@
 
 /* custom imports */
 #include "curses_tui.h"
+#include "reward.h"
 #include "snake.h"
 
 class Mechanics {
@@ -30,6 +31,7 @@ class Mechanics {
     void init_playarea();
     void init_menu();
     void init_snake();
+    void init_reward();
     void render_menu();
     int read() const;
     void update();
@@ -39,5 +41,6 @@ class Mechanics {
     CursesWindow m_game_win;
     CursesWindow m_menu_win;
     Snake snake;
+    Reward reward;
     bool m_initialized = false;
 };

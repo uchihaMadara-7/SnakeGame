@@ -16,6 +16,7 @@ set(SOURCE_FILES ${SOURCE_DIR}/game.cpp
     ${SOURCE_DIR}/logger.cpp
     ${SOURCE_DIR}/mechanics.cpp
     ${SOURCE_DIR}/snake.cpp
+    ${SOURCE_DIR}/reward.cpp
 )
 
 add_executable(snake ${SOURCE_FILES})

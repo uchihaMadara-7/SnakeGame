@@ -31,6 +31,7 @@ void Mechanics::init_screen() {
     init_playarea();
     init_menu();
     init_snake();
+    init_reward();
 }
 
 void Mechanics::init_playarea() {
@@ -65,6 +66,18 @@ void Mechanics::init_snake() {
     snake.add_unit(unit);
     m_game_win.print(y_pos, x_pos, unit.get_symbol());
     wstandend(m_game_win.get_window());
+}
+
+void Mechanics::init_reward() {
+    int height = m_game_win.get_height();
+    int width = m_game_win.get_width();
+    reward.init(height, width);
+    SnakeUnit head = snake.get_head();
+    reward.mark_blocked(head.get_row(), head.get_col());
+    reward.random_position();
+    int y_pos = reward.get_row();
+    int x_pos = reward.get_col();
+    m_game_win.print(y_pos, x_pos, reward.get_symbol());
 }
 
 void Mechanics::render_menu() {

@@ -12,6 +12,20 @@
 #include "include/curses_tui.h"
 #include "include/snake.h"
 
+#define DISPLAY_ARTIFACT(artifact)                            \
+    {                                                         \
+      int y_pos = artifact.get_row();                         \
+      int x_pos = artifact.get_col();                         \
+      m_game_win.print(y_pos, x_pos, artifact.get_symbol());  \
+    }
+
+#define DISPLAY_EMPTY(artifact)                               \
+    {                                                         \
+      int y_pos = artifact.get_row();                         \
+      int x_pos = artifact.get_col();                         \
+      m_game_win.print(y_pos, x_pos, ' ');                    \
+    }
+
 Mechanics::Mechanics() {
     init();
 }
@@ -75,9 +89,7 @@ void Mechanics::init_reward() {
     SnakeUnit head = snake.get_head();
     reward.mark_blocked(head.get_row(), head.get_col());
     reward.random_position();
-    int y_pos = reward.get_row();
-    int x_pos = reward.get_col();
-    m_game_win.print(y_pos, x_pos, reward.get_symbol());
+    DISPLAY_ARTIFACT(reward);
 }
 
 void Mechanics::render_menu() {
@@ -114,12 +126,23 @@ int Mechanics::read() const {
 
 void Mechanics::update() {
     SnakeUnit next = snake.get_next_head();
-    SnakeUnit tail = snake.remove_tail();
     snake.add_unit(next);
+    reward.mark_blocked(next.get_row(), next.get_col());
     ::wattron(m_game_win.get_window(), A_BOLD | A_STANDOUT);
-    m_game_win.print(next.get_row(), next.get_col(), next.get_symbol());
+    DISPLAY_ARTIFACT(next);
     wstandend(m_game_win.get_window());
-    m_game_win.print(tail.get_row(), tail.get_col(), ' ');
+    /* check if next snake position is a reward position */
+    if (next.get_row() != reward.get_row() ||
+            next.get_col() != reward.get_col()) {
+        /* new head is not a reward position */
+        SnakeUnit tail = snake.remove_tail();
+        reward.mark_unblocked(tail.get_row(), tail.get_col());
+        DISPLAY_EMPTY(tail);
+        return;
+    }
+    /* this codeflow comes when snake eats the reward */
+    reward.random_position();
+    DISPLAY_ARTIFACT(reward);
 }
 
 void Mechanics::set_direction(Direction direction) {

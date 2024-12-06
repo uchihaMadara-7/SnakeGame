@@ -29,8 +29,8 @@ void Reward::set_position(int row, int col) {
 }
 
 void Reward::init(int height, int width) {
-    for (int y=0; y < height; ++y) {
-        for (int x=0; x < width; ++x) {
+    for (int y=1; y < height-1; ++y) {
+        for (int x=1; x < width-1; ++x) {
             mark_unblocked(y, x);
         }
     }

@@ -30,6 +30,7 @@ class Mechanics {
     void init_screen();
     void init_playarea();
     void init_menu();
+    void init_score();
     void init_snake();
     void init_reward();
     void render_menu();
@@ -39,10 +40,9 @@ class Mechanics {
     bool is_out_of_bounds(int row, int col);
 
  private:
-    CursesWindow m_game_win;
-    CursesWindow m_menu_win;
-    Snake snake;
-    Reward reward;
+    CursesWindow m_game_win, m_menu_win, m_score_win;
+    Snake m_snake;
+    Reward m_reward;
     bool m_initialized = false;
-    unsigned int delay = 1000;
+    unsigned int m_delay = 1000, m_score = 0;
 };

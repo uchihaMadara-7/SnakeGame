@@ -24,12 +24,12 @@ class SnakeUnit {
  public:
     typedef unsigned int chtype;
 
-    SnakeUnit(int row, int col) : row(row), col(col) {
-        symbol = 'x';
+    SnakeUnit(int row, int col) : m_row(row), m_col(col) {
+        m_symbol = 'x';
     }
 
     SnakeUnit(int row, int col, int symbol) :
-        row(row), col(col), symbol(symbol) {}
+        m_row(row), m_col(col), m_symbol(symbol) {}
 
     /* getters */
     int get_row();
@@ -42,8 +42,8 @@ class SnakeUnit {
     void set_symbol(int symbol);
 
  private:
-    int row, col;
-    chtype symbol;
+    int m_row, m_col;
+    chtype m_symbol;
 };
 
 class Snake {
@@ -60,9 +60,9 @@ class Snake {
     void set_direction(Direction direction);
 
  private:
-    std::queue<SnakeUnit> body;
-    Direction direction = RIGHT;
-    std::set<std::string> snake_position;
+    std::queue<SnakeUnit> m_snake_body;
+    Direction m_direction = RIGHT;
+    std::set<std::string> m_snake_position;
 
     std::string get_key(SnakeUnit position);
 };

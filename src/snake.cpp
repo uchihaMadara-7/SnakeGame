@@ -11,37 +11,37 @@
 /* snake unit definitions */
 
 int SnakeUnit::get_row() {
-    return row;
+    return m_row;
 }
 
 int SnakeUnit::get_col() {
-    return col;
+    return m_col;
 }
 
 SnakeUnit::chtype SnakeUnit::get_symbol() {
-    return symbol;
+    return m_symbol;
 }
 
 void SnakeUnit::set_row(int row) {
-    this->row = row;
+    m_row = row;
 }
 
 void SnakeUnit::set_col(int col) {
-    this->col = col;
+    m_col = col;
 }
 
 void SnakeUnit::set_symbol(int symbol) {
-    this->symbol = symbol;
+    m_symbol = symbol;
 }
 
 /* snake class definitions */
 
 SnakeUnit Snake::get_tail() {
-    return body.front();
+    return m_snake_body.front();
 }
 
 SnakeUnit Snake::get_head() {
-    return body.back();
+    return m_snake_body.back();
 }
 
 SnakeUnit Snake::get_next_head() {
@@ -49,7 +49,7 @@ SnakeUnit Snake::get_next_head() {
     int row = head.get_row();
     int col = head.get_col();
 
-    switch (direction) {
+    switch (m_direction) {
         case UP:
             --row;
             break;
@@ -79,24 +79,24 @@ bool Snake::is_valid_position(SnakeUnit position) {
     std::string key = get_key(position);
     std::string tail_key = get_key(get_tail());
     if (key == tail_key) return true;
-    return !snake_position.count(key);
+    return !m_snake_position.count(key);
 }
 
 void Snake::add_unit(SnakeUnit unit) {
-    body.push(unit);
+    m_snake_body.push(unit);
     std::string key = get_key(unit);
-    snake_position.insert(key);
+    m_snake_position.insert(key);
 }
 
 SnakeUnit Snake::remove_tail() {
     SnakeUnit tail = get_tail();
-    body.pop();
+    m_snake_body.pop();
     std::string key = get_key(tail);
-    snake_position.erase(key);
+    m_snake_position.erase(key);
     return tail;
 }
 
 void Snake::set_direction(Direction direction) {
-    if (0 == (this->direction + direction)) return;
-    this->direction = direction;
+    if (0 == (m_direction + direction)) return;
+    m_direction = direction;
 }

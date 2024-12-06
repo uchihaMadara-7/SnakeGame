@@ -12,20 +12,20 @@
 #include <utility>
 
 int Reward::get_row() {
-    return row;
+    return m_row;
 }
 
 int Reward::get_col() {
-    return col;
+    return m_col;
 }
 
 Reward::chtype Reward::get_symbol() {
-    return symbol;
+    return m_symbol;
 }
 
 void Reward::set_position(int row, int col) {
-    this->row = row;
-    this->col = col;
+    m_row = row;
+    m_col = col;
 }
 
 void Reward::init(int height, int width) {
@@ -37,12 +37,12 @@ void Reward::init(int height, int width) {
 }
 
 void Reward::random_position() {
-    int last_index = free_cells.size()-1;
+    int last_index = m_free_cells.size()-1;
     std::random_device rd;  // Non-deterministic random number generator
     std::mt19937 generator(rd());
     int index = std::uniform_int_distribution<int>(0, last_index)(generator);
-    int y_pos = free_cells[index].first;
-    int x_pos = free_cells[index].second;
+    int y_pos = m_free_cells[index].first;
+    int x_pos = m_free_cells[index].second;
     set_position(y_pos, x_pos);
 }
 
@@ -53,19 +53,19 @@ std::string Reward::get_key(int row, int col) {
 
 void Reward::mark_blocked(int row, int col) {
     std::string key = get_key(row, col);
-    if (!position_to_index.count(key)) return;
-    int index = position_to_index[key];
-    int last_index = free_cells.size()-1;
-    swap(free_cells[last_index], free_cells[index]);
-    free_cells.pop_back();
-    position_to_index.erase(key);
-    std::pair<int, int> swapped_pos = free_cells[index];
+    if (!m_position_to_index.count(key)) return;
+    int index = m_position_to_index[key];
+    int last_index = m_free_cells.size()-1;
+    swap(m_free_cells[last_index], m_free_cells[index]);
+    m_free_cells.pop_back();
+    m_position_to_index.erase(key);
+    std::pair<int, int> swapped_pos = m_free_cells[index];
     std::string swapped_key = get_key(swapped_pos.first, swapped_pos.second);
-    position_to_index[swapped_key] = index;
+    m_position_to_index[swapped_key] = index;
 }
 
 void Reward::mark_unblocked(int row, int col) {
     std::string key = get_key(row, col);
-    free_cells.push_back(std::make_pair(row, col));
-    position_to_index[key] = free_cells.size()-1;
+    m_free_cells.push_back(std::make_pair(row, col));
+    m_position_to_index[key] = m_free_cells.size()-1;
 }

@@ -29,7 +29,8 @@ int main() {
 
     Mechanics &game = Mechanics::getInstance();
     if (!game.is_initialized()) {
-        printf("Game initialisation failed!");
+        printf("Game initialisation failed! ");
+        printf("(Try increasing the window size) ");
         return 1;
     }
 

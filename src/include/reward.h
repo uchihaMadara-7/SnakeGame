@@ -20,7 +20,7 @@ class Reward {
     typedef unsigned int chtype;
 
     Reward() {
-        symbol = 'x';
+        m_symbol = 'x';
     }
 
     /* getters */
@@ -36,10 +36,10 @@ class Reward {
     void mark_unblocked(int row, int col);
 
  private:
-    int row, col;
-    chtype symbol;
-    std::map<std::string, int> position_to_index;
-    std::vector<std::pair<int, int>> free_cells;
+    int m_row, m_col;
+    chtype m_symbol;
+    std::map<std::string, int> m_position_to_index;
+    std::vector<std::pair<int, int>> m_free_cells;
 
     std::string get_key(int row, int col);
 };

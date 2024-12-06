@@ -34,8 +34,9 @@ class Mechanics {
     void init_reward();
     void render_menu();
     int read() const;
-    void update();
+    bool update();
     void set_direction(Direction direction);
+    bool is_out_of_bounds(int row, int col);
 
  private:
     CursesWindow m_game_win;

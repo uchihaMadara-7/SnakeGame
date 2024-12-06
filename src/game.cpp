@@ -57,7 +57,8 @@ int main() {
                 break;
         }
 
-        game.update();
+        bool gameover = !game.update();
+        quit |= gameover;
     }
 
     return 0;

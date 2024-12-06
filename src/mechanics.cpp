@@ -124,8 +124,10 @@ int Mechanics::read() const {
     return m_menu_win.read();
 }
 
-void Mechanics::update() {
+bool Mechanics::update() {
     SnakeUnit next = snake.get_next_head();
+    /* check if snake next position is out of bounds */
+    if (is_out_of_bounds(next.get_row(), next.get_col())) return false;
     snake.add_unit(next);
     reward.mark_blocked(next.get_row(), next.get_col());
     ::wattron(m_game_win.get_window(), A_BOLD | A_STANDOUT);
@@ -138,13 +140,20 @@ void Mechanics::update() {
         SnakeUnit tail = snake.remove_tail();
         reward.mark_unblocked(tail.get_row(), tail.get_col());
         DISPLAY_EMPTY(tail);
-        return;
+        return true;
     }
     /* this codeflow comes when snake eats the reward */
     reward.random_position();
     DISPLAY_ARTIFACT(reward);
+    return true;
 }
 
 void Mechanics::set_direction(Direction direction) {
     snake.set_direction(direction);
+}
+
+bool Mechanics::is_out_of_bounds(int row, int col) {
+    if (row <=0 || row >= m_game_win.get_height()-1) return true;
+    if (col <=0 || col >= m_game_win.get_width()-1) return true;
+    return false;
 }

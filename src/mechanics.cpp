@@ -67,7 +67,7 @@ void Mechanics::init_menu() {
         menu_start_row, menu_start_col);
     m_menu_win.cursor_mode(CURSOR_INVISIBLE);
     /* wait for input for atleast 1 second */
-    m_menu_win.set_delay(1000);
+    m_menu_win.set_delay(delay);
     m_menu_win.set_border();
     render_menu();
 }
@@ -145,6 +145,10 @@ bool Mechanics::update() {
     /* this codeflow comes when snake eats the reward */
     reward.random_position();
     DISPLAY_ARTIFACT(reward);
+    /* decrease the delay by 25ms until it reaches 100ms */
+    delay = delay-25;
+    delay = (delay > 100)?delay:100;
+    m_menu_win.set_delay(delay);
     return true;
 }
 

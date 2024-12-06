@@ -44,4 +44,5 @@ class Mechanics {
     Snake snake;
     Reward reward;
     bool m_initialized = false;
+    unsigned int delay = 1000;
 };

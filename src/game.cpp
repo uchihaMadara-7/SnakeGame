@@ -57,7 +57,11 @@ int main() {
                 break;
         }
 
+        // auto start = std::chrono::high_resolution_clock::now();
         bool gameover = !game.update();
+        // auto finish = std::chrono::high_resolution_clock::now();
+        // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
+        // DEBUG_TRACE("update took: %lld us", duration.count());
         quit |= gameover;
     }
 

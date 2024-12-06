@@ -128,11 +128,16 @@ bool Mechanics::update() {
     SnakeUnit next = snake.get_next_head();
     /* check if snake next position is out of bounds */
     if (is_out_of_bounds(next.get_row(), next.get_col())) return false;
+
+    /* check if snake doesn't overlap with its body */
+    if (!snake.is_valid_position(next)) return false;
+
     snake.add_unit(next);
     reward.mark_blocked(next.get_row(), next.get_col());
     ::wattron(m_game_win.get_window(), A_BOLD | A_STANDOUT);
     DISPLAY_ARTIFACT(next);
     wstandend(m_game_win.get_window());
+
     /* check if next snake position is a reward position */
     if (next.get_row() != reward.get_row() ||
             next.get_col() != reward.get_col()) {
@@ -142,9 +147,11 @@ bool Mechanics::update() {
         DISPLAY_EMPTY(tail);
         return true;
     }
+
     /* this codeflow comes when snake eats the reward */
     reward.random_position();
     DISPLAY_ARTIFACT(reward);
+
     /* decrease the delay by 25ms until it reaches 100ms */
     delay = delay-25;
     delay = (delay > 100)?delay:100;

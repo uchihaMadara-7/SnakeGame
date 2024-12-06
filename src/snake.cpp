@@ -68,13 +68,31 @@ SnakeUnit Snake::get_next_head() {
     return next;
 }
 
+std::string Snake::get_key(SnakeUnit position) {
+    int row = position.get_row();
+    int col = position.get_col();
+    std::string key = std::to_string(row) + "/" + std::to_string(col);
+    return key;
+}
+
+bool Snake::is_valid_position(SnakeUnit position) {
+    std::string key = get_key(position);
+    std::string tail_key = get_key(get_tail());
+    if (key == tail_key) return true;
+    return !snake_position.count(key);
+}
+
 void Snake::add_unit(SnakeUnit unit) {
     body.push(unit);
+    std::string key = get_key(unit);
+    snake_position.insert(key);
 }
 
 SnakeUnit Snake::remove_tail() {
     SnakeUnit tail = get_tail();
     body.pop();
+    std::string key = get_key(tail);
+    snake_position.erase(key);
     return tail;
 }
 

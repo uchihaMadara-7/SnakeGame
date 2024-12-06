@@ -10,6 +10,8 @@
 
 /* standard imports */
 #include <queue>
+#include <set>
+#include <string>
 
 enum Direction {
     UP = -1,
@@ -50,6 +52,7 @@ class Snake {
     SnakeUnit get_tail();
     SnakeUnit get_head();
     SnakeUnit get_next_head();
+    bool is_valid_position(SnakeUnit position);
 
     /* setters */
     void add_unit(SnakeUnit unit);
@@ -59,6 +62,9 @@ class Snake {
  private:
     std::queue<SnakeUnit> body;
     Direction direction = RIGHT;
+    std::set<std::string> snake_position;
+
+    std::string get_key(SnakeUnit position);
 };
 
 #endif  // SRC_INCLUDE_SNAKE_H_

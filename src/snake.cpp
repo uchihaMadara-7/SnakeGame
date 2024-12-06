@@ -79,5 +79,6 @@ SnakeUnit Snake::remove_tail() {
 }
 
 void Snake::set_direction(Direction direction) {
+    if (0 == (this->direction + direction)) return;
     this->direction = direction;
 }

@@ -177,6 +177,70 @@ Mechanics::GameState Mechanics::game_over() {
     return choice;
 }
 
+Mechanics::GameState Mechanics::game_pause() {
+    /* game-pause banner window */
+    CursesWindow pause_win;
+    size_t start_row = GAME_HEIGHT/2 - OVER_HEIGHT/2;
+    size_t start_col = GAME_WIDTH/2 - OVER_WIDTH/2;
+    pause_win.create_window(OVER_HEIGHT, OVER_WIDTH, start_row, start_col);
+    pause_win.cbreak();
+    pause_win.cursor_mode(CURSOR_INVISIBLE);
+    pause_win.set_echo(false);
+    ::wattron(pause_win.get_window(), A_BOLD);
+    pause_win.draw_box();
+    start_col = OVER_WIDTH/2 - strlen(GAME_PAUSE)/2;
+    pause_win.print(1, start_col, GAME_PAUSE);
+    wstandend(pause_win.get_window());
+
+    std::string score = "SCORE: " + std::to_string(m_score);
+    start_col = OVER_WIDTH/2 - score.size()/2;
+    pause_win.print(2, start_col, score);
+
+    /* options to retry and quit */
+    auto select_option = [&](GameState choice) {
+        start_col = OVER_WIDTH/2 - (strlen(GAME_RESUME)+strlen(GAME_QUIT)+2)/2;
+        if (choice == GameState::CONTINUE) {
+            ::wattron(pause_win.get_window(), A_BOLD | A_STANDOUT);
+            pause_win.print(4, start_col, GAME_RESUME);
+            wstandend(pause_win.get_window());
+            pause_win.print("  ");
+            pause_win.print(GAME_QUIT);
+            return;
+        }
+        pause_win.print(4, start_col, GAME_RESUME);
+        pause_win.print("  ");
+        ::wattron(pause_win.get_window(), A_BOLD | A_STANDOUT);
+        pause_win.print(GAME_QUIT);
+        wstandend(pause_win.get_window());
+    };
+
+    chtype key;
+    GameState choice = GameState::CONTINUE;
+    select_option(choice);
+    bool chosen = false;
+    while (!chosen) {
+        key = pause_win.read();
+        switch (key) {
+            case KEY_LEFT:
+                choice = GameState::CONTINUE;
+                select_option(choice);
+                break;
+            case KEY_RIGHT:
+                choice = GameState::QUIT;
+                select_option(choice);
+                break;
+            case KEY_ENTER:
+                chosen = true;
+                break;
+        }
+    }
+
+    pause_win.clear();
+    pause_win.refresh();
+
+    return choice;
+}
+
 int Mechanics::read() const {
     return m_menu_win.read();
 }

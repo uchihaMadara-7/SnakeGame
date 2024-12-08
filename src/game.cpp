@@ -38,12 +38,33 @@ int main() {
     bool quit = false;
 
     while (!quit) {
+        Mechanics::GameState state;
+
+        /* decision lambda function */
+        auto decision = [&]() {
+            switch (state) {
+                case Mechanics::GameState::QUIT:
+                    delete game;
+                    quit = true;
+                    break;
+                case Mechanics::GameState::RETRY:
+                    delete game;
+                    game = new Mechanics;
+                    break;
+                case Mechanics::GameState::CONTINUE:
+                    break;
+            }
+        };
+
         ch = game->read();
         switch (ch) {
             case 'q':
-                quit = true;
-                delete game;
-                continue;
+                state = Mechanics::GameState::QUIT;
+                decision();
+                break;
+            case 'p':
+                state = game->game_pause();
+                decision();
                 break;
             case KEY_DOWN:
                 game->set_direction(DOWN);
@@ -59,20 +80,10 @@ int main() {
                 break;
         }
 
+        if (quit) break;
         // auto start = std::chrono::high_resolution_clock::now();
-        Mechanics::GameState state = game->update();
-        switch (state) {
-            case Mechanics::GameState::QUIT:
-                delete game;
-                quit = true;
-                break;
-            case Mechanics::GameState::RETRY:
-                delete game;
-                game = new Mechanics;
-                break;
-            case Mechanics::GameState::CONTINUE:
-                break;
-        }
+        state = game->update();
+        decision();
         // auto finish = std::chrono::high_resolution_clock::now();
         // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
         // DEBUG_TRACE("update took: %lld us", duration.count());

@@ -42,7 +42,9 @@
 #define MOE              4  /* margin of error */
 #define REDUCE_DELAY     25
 #define GAME_OVER        "GAMEOVER!"
+#define GAME_PAUSE       "PAUSED!"
 #define GAME_RETRY       " RETRY "
+#define GAME_RESUME      " RESUME "
 #define GAME_QUIT        " QUIT "
 
 class Mechanics {
@@ -66,6 +68,7 @@ class Mechanics {
     void init_reward();
     void render_menu();
     GameState game_over();
+    GameState game_pause();
     int read() const;
     GameState update();
     void set_direction(Direction direction);

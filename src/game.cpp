@@ -13,7 +13,7 @@
 #include "include/mechanics.h"
 #include "include/snake.h"
 
-#define LOG_FILE "game->log"
+#define LOG_FILE "game.log"
 
 int main() {
     /* Setting up logger */
@@ -42,6 +42,8 @@ int main() {
         switch (ch) {
             case 'q':
                 quit = true;
+                delete game;
+                continue;
                 break;
             case KEY_DOWN:
                 game->set_direction(DOWN);
@@ -61,6 +63,7 @@ int main() {
         Mechanics::GameState state = game->update();
         switch (state) {
             case Mechanics::GameState::QUIT:
+                delete game;
                 quit = true;
                 break;
             case Mechanics::GameState::RETRY:

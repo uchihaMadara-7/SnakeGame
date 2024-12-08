@@ -29,3 +29,11 @@ once make is done, `snake` executable will be created in build directory. Simply
 ```
 ~$ ./snake
 ```
+
+# Snapshots
+
+## Game
+![Alt Text](/assets/game.png?raw=true "Snake Game")
+
+## Gameover
+![Alt Text](/assets/gameover.png?raw=true "Snake Game Over")

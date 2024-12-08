@@ -8,6 +8,10 @@
 #ifndef SRC_INCLUDE_MECHANICS_H_
 #define SRC_INCLUDE_MECHANICS_H_
 
+/* standard imports */
+#include <cstring>
+#include <vector>
+
 /* custom imports */
 #include "curses_tui.h"
 #include "reward.h"
@@ -28,6 +32,7 @@
     }
 
 #define MAX(first, second) ((first) > (second))?(first):(second)
+#define MIN(first, second) ((first) < (second))?(first):(second)
 
 #define MENU_WIDTH       38
 #define MENU_HEIGHT      13
@@ -68,6 +73,8 @@ class Mechanics {
     void init_reward();
     void render_menu();
     GameState game_over();
+    std::vector<std::vector<chtype>> snapshot(CursesWindow &cwin);
+    void restore_snap(CursesWindow &cwin, std::vector<std::vector<chtype>> &ss);
     GameState game_pause();
     int read() const;
     GameState update();

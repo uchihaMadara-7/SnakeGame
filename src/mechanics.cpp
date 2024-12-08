@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* standard imports */
-#include <cstring>
-
 /* custom imports */
 #include "include/mechanics.h"
 #include "include/curses_tui.h"
@@ -177,7 +174,32 @@ Mechanics::GameState Mechanics::game_over() {
     return choice;
 }
 
+std::vector<std::vector<chtype>> Mechanics::snapshot(CursesWindow &cwin) {
+    std::vector<std::vector<chtype>> ss;
+    for (int row=0; row < cwin.get_height(); ++row) {
+        std::vector<chtype> row_vec;
+        for (int col=0; col < cwin.get_width(); ++col) {
+            row_vec.push_back(mvwinch(cwin.get_window(), row, col));
+        }
+        ss.push_back(row_vec);
+    }
+    return ss;
+}
+
+void Mechanics::restore_snap(CursesWindow &cwin,
+        std::vector<std::vector<chtype>> &ss) {
+    int total_rows = MIN(cwin.get_height(), (int)ss.size());
+    int total_cols = MIN(cwin.get_width(), (int)ss[0].size());
+    for (int row=0; row < total_rows; ++row) {
+        for (int col=0; col < total_cols; ++col) {
+            cwin.print(row, col, ss[row][col]);
+        }
+    }
+}
+
 Mechanics::GameState Mechanics::game_pause() {
+    /* taking snapshot for re-painting the screen */
+    std::vector<std::vector<chtype>> ss = snapshot(m_game_win);
     /* game-pause banner window */
     CursesWindow pause_win;
     size_t start_row = GAME_HEIGHT/2 - OVER_HEIGHT/2;
@@ -235,8 +257,8 @@ Mechanics::GameState Mechanics::game_pause() {
         }
     }
 
-    pause_win.clear();
-    pause_win.refresh();
+    /* restoring the snapshot */
+    restore_snap(m_game_win, ss);
 
     return choice;
 }

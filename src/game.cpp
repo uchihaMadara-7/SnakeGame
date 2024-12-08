@@ -13,7 +13,7 @@
 #include "include/mechanics.h"
 #include "include/snake.h"
 
-#define LOG_FILE "game.log"
+#define LOG_FILE "game->log"
 
 int main() {
     /* Setting up logger */
@@ -27,8 +27,8 @@ int main() {
     logger.set_level(LOG_DEBUG);
     #endif
 
-    Mechanics &game = Mechanics::getInstance();
-    if (!game.is_initialized()) {
+    Mechanics *game = new Mechanics;
+    if (!game->is_initialized()) {
         printf("Game initialisation failed! ");
         printf("(Try increasing the window size) ");
         return 1;
@@ -38,32 +38,41 @@ int main() {
     bool quit = false;
 
     while (!quit) {
-        ch = game.read();
-        // INFO_TRACE("read game character %d", ch);
+        ch = game->read();
         switch (ch) {
             case 'q':
                 quit = true;
                 break;
             case KEY_DOWN:
-                game.set_direction(DOWN);
+                game->set_direction(DOWN);
                 break;
             case KEY_UP:
-                game.set_direction(UP);
+                game->set_direction(UP);
                 break;
             case KEY_LEFT:
-                game.set_direction(LEFT);
+                game->set_direction(LEFT);
                 break;
             case KEY_RIGHT:
-                game.set_direction(RIGHT);
+                game->set_direction(RIGHT);
                 break;
         }
 
         // auto start = std::chrono::high_resolution_clock::now();
-        bool gameover = !game.update();
+        Mechanics::GameState state = game->update();
+        switch (state) {
+            case Mechanics::GameState::QUIT:
+                quit = true;
+                break;
+            case Mechanics::GameState::RETRY:
+                delete game;
+                game = new Mechanics;
+                break;
+            case Mechanics::GameState::CONTINUE:
+                break;
+        }
         // auto finish = std::chrono::high_resolution_clock::now();
         // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
         // DEBUG_TRACE("update took: %lld us", duration.count());
-        quit |= gameover;
     }
 
     return 0;

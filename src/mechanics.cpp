@@ -6,38 +6,12 @@
  */
 
 /* standard imports */
+#include <cstring>
 
 /* custom imports */
 #include "include/mechanics.h"
 #include "include/curses_tui.h"
 #include "include/snake.h"
-
-#define DISPLAY_ARTIFACT(artifact)                            \
-    {                                                         \
-      int y_pos = artifact.get_row();                         \
-      int x_pos = artifact.get_col();                         \
-      m_game_win.print(y_pos, x_pos, artifact.get_symbol());  \
-    }
-
-#define DISPLAY_EMPTY(artifact)                               \
-    {                                                         \
-      int y_pos = artifact.get_row();                         \
-      int x_pos = artifact.get_col();                         \
-      m_game_win.print(y_pos, x_pos, ' ');                    \
-    }
-
-#define MAX(first, second) ((first) > (second))?(first):(second)
-
-#define MENU_WIDTH       38
-#define MENU_HEIGHT      13
-#define SCORE_WIDTH      COLS
-#define SCORE_HEIGHT     1
-#define MIN_GAME_WIDTH   40
-#define MIN_GAME_HEIGHT  (20 + SCORE_HEIGHT)
-#define GAME_WIDTH       (COLS - MENU_WIDTH - MOE)
-#define GAME_HEIGHT      (LINES - SCORE_HEIGHT)
-#define MOE              4  /* margin of error */
-#define REDUCE_DELAY     25
 
 Mechanics::Mechanics() {
     init();
@@ -81,7 +55,6 @@ void Mechanics::init_score() {
     /* score screen */
     m_score_win.create_window(SCORE_HEIGHT, SCORE_WIDTH, 0, 0);
     m_score_win.cursor_mode(CURSOR_INVISIBLE);
-
     m_score_win.print(" SCORE: 0");
 }
 
@@ -142,17 +115,79 @@ void Mechanics::render_menu() {
     m_menu_win.print(10, col_pos, entry);
 }
 
+Mechanics::GameState Mechanics::game_over() {
+    /* gameover banner window */
+    CursesWindow over_win;
+    size_t start_row = GAME_HEIGHT/2 - OVER_HEIGHT/2;
+    size_t start_col = GAME_WIDTH/2 - OVER_WIDTH/2;
+    over_win.create_window(OVER_HEIGHT, OVER_WIDTH, start_row, start_col);
+    over_win.cbreak();
+    over_win.cursor_mode(CURSOR_INVISIBLE);
+    over_win.set_echo(false);
+    init_pair(1, COLOR_RED, -1);
+    ::wattron(over_win.get_window(), A_BOLD | COLOR_PAIR(1));
+    over_win.draw_box();
+    start_col = OVER_WIDTH/2 - strlen(GAME_OVER)/2;
+    over_win.print(1, start_col, GAME_OVER);
+    wstandend(over_win.get_window());
+
+    std::string score = "SCORE: " + std::to_string(m_score);
+    start_col = OVER_WIDTH/2 - score.size()/2;
+    over_win.print(2, start_col, score);
+
+    /* options to retry and quit */
+    auto select_option = [&](GameState choice) {
+        start_col = OVER_WIDTH/2 - (strlen(GAME_RETRY)+strlen(GAME_QUIT)+2)/2;
+        if (choice == GameState::RETRY) {
+            ::wattron(over_win.get_window(), A_BOLD | A_STANDOUT);
+            over_win.print(4, start_col, GAME_RETRY);
+            wstandend(over_win.get_window());
+            over_win.print("  ");
+            over_win.print(GAME_QUIT);
+            return;
+        }
+        over_win.print(4, start_col, GAME_RETRY);
+        over_win.print("  ");
+        ::wattron(over_win.get_window(), A_BOLD | A_STANDOUT);
+        over_win.print(GAME_QUIT);
+        wstandend(over_win.get_window());
+    };
+
+    chtype key;
+    GameState choice = GameState::RETRY;
+    select_option(choice);
+    bool chosen = false;
+    while (!chosen) {
+        key = over_win.read();
+        switch (key) {
+            case KEY_LEFT:
+                choice = GameState::RETRY;
+                select_option(choice);
+                break;
+            case KEY_RIGHT:
+                choice = GameState::QUIT;
+                select_option(choice);
+                break;
+            case KEY_ENTER:
+                chosen = true;
+                break;
+        }
+    }
+
+    return choice;
+}
+
 int Mechanics::read() const {
     return m_menu_win.read();
 }
 
-bool Mechanics::update() {
+Mechanics::GameState Mechanics::update() {
     SnakeUnit next = m_snake.get_next_head();
     /* check if snake next position is out of bounds */
-    if (is_out_of_bounds(next.get_row(), next.get_col())) return false;
+    if (is_out_of_bounds(next.get_row(), next.get_col())) return game_over();
 
     /* check if snake doesn't overlap with its body */
-    if (!m_snake.is_valid_position(next)) return false;
+    if (!m_snake.is_valid_position(next)) return game_over();
 
     m_snake.add_unit(next);
     m_reward.mark_blocked(next.get_row(), next.get_col());
@@ -167,7 +202,7 @@ bool Mechanics::update() {
         SnakeUnit tail = m_snake.remove_tail();
         m_reward.mark_unblocked(tail.get_row(), tail.get_col());
         DISPLAY_EMPTY(tail);
-        return true;
+        return GameState::CONTINUE;
     }
 
     /* this codeflow comes when snake eats the reward */
@@ -182,7 +217,7 @@ bool Mechanics::update() {
     /* decrease the delay by 25ms until it reaches 100ms */
     m_delay = MAX(m_delay-REDUCE_DELAY, 100);
     m_menu_win.set_delay(m_delay);
-    return true;
+    return GameState::CONTINUE;
 }
 
 void Mechanics::set_direction(Direction direction) {
